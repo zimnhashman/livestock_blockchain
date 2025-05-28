@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  ganache:
+    image: trufflesuite/ganache
+    container_name: ganache-server
+    ports:
+      - "8545:8545"
+    networks:
+      - blockchain-net
+    command: ["--server.host", "0.0.0.0", "--wallet.deterministic", "--chain.chainId=1337"]
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8545"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 15s
+
+  hardhat:
+    image: node:18
+    container_name: hardhat-deployer
+    working_dir: /app
+    volumes:
+      - ./hardhat-project:/app
+    networks:
+      - blockchain-net
+    depends_on:
+      ganache:
+        condition: service_healthy
+    command: bash -c "npm install && npx hardhat run scripts/deploy.js --network ganache"
+
+networks:
+  blockchain-net:
+    driver: bridge
