@@ -1,4 +1,4 @@
-// Place this in your project ROOT (next to backend/frontend folders)
+
 module.exports = {
   contracts_build_directory: "./backend/build/contracts",
   contracts_directory: "./backend/contracts",
